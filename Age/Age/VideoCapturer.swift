@@ -18,7 +18,7 @@ public protocol VideoCapturerDelegate : class {
 public class VideoCapturer : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
     public var previewLayer : AVCaptureVideoPreviewLayer?
     public weak var deletate : VideoCapturerDelegate?
-    public let fps = 15
+    public let fps = 1
     
     let captureSession = AVCaptureSession()
     let videoOutput = AVCaptureVideoDataOutput()
@@ -42,7 +42,7 @@ public class VideoCapturer : NSObject, AVCaptureVideoDataOutputSampleBufferDeleg
         
         captureSession.sessionPreset = sessionPreset
         
-        guard let device = AVCaptureDevice.default(for: AVMediaType.video) else {
+        guard let device = AVCaptureDevice.default(AVCaptureDevice.DeviceType.builtInWideAngleCamera, for: AVMediaType.video, position: AVCaptureDevice.Position.front) else {
             NSLog("no video capture device found")
             captureSession.commitConfiguration()
             return false
@@ -74,11 +74,13 @@ public class VideoCapturer : NSObject, AVCaptureVideoDataOutputSampleBufferDeleg
             captureSession.addOutput(videoOutput)
         }
         
+        videoOutput.connection(with: AVMediaType.video)?.videoOrientation = .portrait
+        
         captureSession.commitConfiguration()
         return true
     }
     
-    public func captureOutput(_ output: AVCaptureOutput, didDrop sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+    public func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         let timestamp = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
         let deltatime = timestamp - lastTimestamp
         if deltatime >= CMTimeMake(1, Int32(fps)){
@@ -92,7 +94,7 @@ public class VideoCapturer : NSObject, AVCaptureVideoDataOutputSampleBufferDeleg
     
     public func start() {
         if !captureSession.isRunning {
-            captureSession.stopRunning()
+            captureSession.startRunning()
         }
     }
     
