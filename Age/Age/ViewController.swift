@@ -75,7 +75,7 @@ class ViewController: UIViewController {
             }
             return
         })
-        ageRequest?.imageCropAndScaleOption = .centerCrop
+        ageRequest?.imageCropAndScaleOption = .scaleFit
         
         guard let vnGenderModel = try? VNCoreMLModel(for: genderModel.model) else {
             NSLog("Load gender model fail")
@@ -91,6 +91,8 @@ class ViewController: UIViewController {
                 }
             }
         })
+        
+        genderRequest.imageCropAndScaleOption = .scaleFit
     }
     
     func predict(pixelBuffer : CVPixelBuffer) {
