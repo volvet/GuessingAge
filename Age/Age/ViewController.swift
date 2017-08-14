@@ -86,7 +86,7 @@ class ViewController: UIViewController {
             if let observations = request.results as? [VNClassificationObservation] {
                 if observations.count > 1 {
                     DispatchQueue.main.async {
-                        self.mGenderInfo.text = "You gender is " + observations[0].identifier
+                        self.mGenderInfo.text = "Your gender is " + observations[0].identifier
                     }
                 }
             }
